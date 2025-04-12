@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "CardService\\CardService.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "FakeExternalServices\\FakeExternalServices.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
