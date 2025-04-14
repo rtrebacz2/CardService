@@ -14,6 +14,7 @@ using OpenTelemetry.Resources;
 using Prometheus;
 using CardService.Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<CardDetailsClientOptions>(builder.Configuration.GetSection("CardDetailsClient"));
@@ -45,6 +46,14 @@ builder.Services.AddHttpClient<ICardDetailsClient, CardDetailsClient>((sp, httpC
 
 
 builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing =>
+    {
+        tracing
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("CardService"))
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddConsoleExporter();
+    })
     .WithMetrics(metrics =>
     {
         metrics
@@ -68,7 +77,6 @@ app.UseMiddleware<LoggingMiddleware>();
 app.UseMiddleware<FluentValidationExceptionMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseRouting();
-app.UseHttpMetrics();
 
 if (app.Environment.IsDevelopment())
 {
@@ -83,5 +91,4 @@ app.UseEndpoints(endpoints =>
 
 app.MapControllers();
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
-
 app.Run();

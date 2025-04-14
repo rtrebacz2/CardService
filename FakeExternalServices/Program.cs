@@ -1,6 +1,8 @@
 using FakeExternalServices.Services;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 {
@@ -12,6 +14,16 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<ICardDetailsService, CardDetailsService>();
     builder.Services.AddSingleton<ICardsRepository, CardsRepository>();
     builder.Services.AddSwaggerGen();
+
+    builder.Services.AddOpenTelemetry()
+        .WithTracing(tracing =>
+        {
+            tracing
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("CardService"))
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddConsoleExporter();
+        });
 }
 
 var app = builder.Build();

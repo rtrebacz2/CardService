@@ -13,6 +13,11 @@ public class LoggingMiddleware
 
     public async Task Invoke(HttpContext context)
     {
+        if (context.Request.Path.StartsWithSegments("/metrics"))
+        {
+            await _next(context);
+            return;
+        }
         context.Request.EnableBuffering();
         var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
         context.Request.Body.Position = 0;
