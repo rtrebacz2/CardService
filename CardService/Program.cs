@@ -11,6 +11,7 @@ using CardService.UserCardsModule.Queries;
 using FluentValidation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,14 @@ builder.Services.AddHttpClient<ICardDetailsClient, CardDetailsClient>((sp, httpC
 
 
 builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing =>
+    {
+        tracing
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("CardService"))
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddConsoleExporter(); 
+    })
     .WithMetrics(metrics =>
     {
         metrics
