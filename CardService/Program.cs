@@ -9,6 +9,8 @@ using CardService.Interceptors;
 using CardService.UserCardsModule.Validators;
 using CardService.UserCardsModule.Queries;
 using FluentValidation.AspNetCore;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +41,18 @@ builder.Services.AddHttpClient<ICardDetailsClient, CardDetailsClient>((sp, httpC
 })
     .AddPolicyHandler(HttpClientsPolicy.GetRetryPolicy());
 
+
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(metrics =>
+    {
+        metrics
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("CardService"))
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddRuntimeInstrumentation()
+            .AddPrometheusExporter();
+    });
+
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File("logs/api.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
@@ -57,6 +71,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.Run();
