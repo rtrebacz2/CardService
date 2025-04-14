@@ -1,4 +1,6 @@
-﻿namespace CardService.Services.AllowedActionRules;
+﻿using CardService.Services.AllowedActionRules.Rules;
+
+namespace CardService.Services.AllowedActionRules;
 
 public static class CardAllowedActionsRegister
 {

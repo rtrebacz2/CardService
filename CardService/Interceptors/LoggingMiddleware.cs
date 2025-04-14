@@ -1,4 +1,4 @@
-﻿namespace CardService.Infrastructure.HttpClients;
+﻿namespace CardService.Interceptors;
 
 public class LoggingMiddleware
 {

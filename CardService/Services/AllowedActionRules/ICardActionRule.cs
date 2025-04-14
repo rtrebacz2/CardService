@@ -4,6 +4,6 @@ namespace CardService.Services.AllowedActionRules;
 
 public interface ICardActionRule
 {
-    CardAction Action { get; }
+    string Action { get; }
     bool IsAllowed(CardDetails details);
 }

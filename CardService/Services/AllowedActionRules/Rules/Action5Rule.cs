@@ -1,9 +1,9 @@
 ﻿using CardService.Entities;
 
-namespace CardService.Services.AllowedActionRules;
+namespace CardService.Services.AllowedActionRules.Rules;
 
 public class Action5Rule : ICardActionRule
 {
-    public CardAction Action => "ACTION5";
+    public string Action=> "ACTION5";
     public bool IsAllowed(CardDetails details) => details.CardType == CardType.CREDIT;
 }

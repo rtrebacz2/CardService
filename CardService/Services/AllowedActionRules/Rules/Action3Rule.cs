@@ -1,9 +1,9 @@
 ﻿using CardService.Entities;
 
-namespace CardService.Services.AllowedActionRules;
+namespace CardService.Services.AllowedActionRules.Rules;
 
 public class Action3Rule : ICardActionRule
 {
-    public CardAction Action => "ACTION3";
+    public string Action=> "ACTION3";
     public bool IsAllowed(CardDetails details) => true;
 }

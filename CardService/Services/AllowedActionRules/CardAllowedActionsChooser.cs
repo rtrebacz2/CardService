@@ -10,10 +10,10 @@ public class CardAllowedActionsChooser : ICardAllowedActionsChooser
     {
         _rules = rules;
     }
-    public List<CardAction> Get(CardDetails? cardDetails)
+    public List<string> Get(CardDetails? cardDetails)
     {
         if (cardDetails == null)
-            return new List<CardAction>();
+            return new List<string>();
 
         var results = _rules
             .Where(r => r.IsAllowed(cardDetails))
@@ -25,5 +25,5 @@ public class CardAllowedActionsChooser : ICardAllowedActionsChooser
 
 public interface ICardAllowedActionsChooser
 {
-    List<CardAction> Get(CardDetails? cardDetails);
+    List<string> Get(CardDetails? cardDetails);
 }

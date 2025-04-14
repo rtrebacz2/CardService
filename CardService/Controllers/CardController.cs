@@ -1,18 +1,18 @@
-﻿using CardService.Controllers.Requests;
-using CardService.Entities;
-using CardService.Services;
+﻿using CardService.UserCardsModule.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CardService.Controllers;
 
-[Route("[controller]")]
-public class CardController(ICardService cardService) : ControllerBase
+[ApiController]
+[Route("cards")]
+public class CardController(IMediator mediator) : ControllerBase
 {
     [HttpGet("actions")]
-    public async Task<ActionResult<List<CardAction>>> GetAllowedActions([FromQuery] GetCardActionsQuery query)
+    public async Task<IActionResult> GetAllowedActions([FromQuery] CardActionsQuery query, CancellationToken cancellationToken)
     {
-        var actions = await cardService.GetPossibleActionsForUserCard(query.UserId, query.CardNumber);
-        return Ok(actions.Select(a => (string)a!));
+
+        return Ok(await mediator.Send(new CardActionsQuery{UserId = query.UserId, CardNumber = query.CardNumber}));
 
     }
 }
