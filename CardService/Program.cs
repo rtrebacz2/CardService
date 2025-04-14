@@ -56,7 +56,7 @@ builder.Services.AddOpenTelemetry()
     });
 
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.File("logs/api.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.File(builder.Configuration["Logging:FileName"] ?? string.Empty, rollingInterval: RollingInterval.Day)
     .CreateLogger();
 builder.Host.UseSerilog();
 
