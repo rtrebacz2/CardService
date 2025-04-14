@@ -11,9 +11,12 @@ using CardService.UserCardsModule.Queries;
 using FluentValidation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
+using Prometheus;
+using CardService.Infrastructure.Configuration;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.Configure<CardDetailsClientOptions>(builder.Configuration.GetSection("CardDetailsClient"));
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -34,9 +37,8 @@ builder.Services.RegisterCardAllowedActions();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient<ICardDetailsClient, CardDetailsClient>((sp, httpClient) =>
 {
-    var config = sp.GetRequiredService<IConfiguration>();
-    var baseAddress = config["CardDetailsClient:BaseAddress"];
-    httpClient.BaseAddress = new Uri(baseAddress);
+    var options = sp.GetRequiredService<IOptions<CardDetailsClientOptions>>().Value;
+    httpClient.BaseAddress = new Uri(options.BaseAddress);
     httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 })
     .AddPolicyHandler(HttpClientsPolicy.GetRetryPolicy());
@@ -58,17 +60,26 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 builder.Host.UseSerilog();
 
+var cardRequestsCounter = Metrics.CreateCounter("card_requests_total", "Total number of requests to the card service.");
+builder.Services.AddSingleton(cardRequestsCounter);
 
 var app = builder.Build();
 app.UseMiddleware<LoggingMiddleware>();
 app.UseMiddleware<FluentValidationExceptionMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseRouting();
+app.UseHttpMetrics();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapMetrics();
+});
 
 app.MapControllers();
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
