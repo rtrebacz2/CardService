@@ -1,4 +1,5 @@
-﻿using FakeExternalServices.Entities;
+﻿using FakeExternalServices.Controllers.Responses;
+using FakeExternalServices.Entities;
 using FakeExternalServices.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,15 +8,6 @@ namespace FakeExternalServices.Controllers;
 [Route("[controller]")]
 public class CardDetailsController(ICardDetailsService cardDetailsService) : ControllerBase
 {
-    //[HttpGet]
-    //public ActionResult<List<ProductResponse>> GetAll()
-    //{
-    //    return productsService
-    //        .GetAllProducts()
-    //        .Select(ProductResponse.FromProduct)
-    //        .ToList();
-    //}
-
     [HttpGet("{userId}/{cardNumber}")]
     public ActionResult<CardDetailsResponse> Get(string userId, string cardNumber)
     {
@@ -27,37 +19,14 @@ public class CardDetailsController(ICardDetailsService cardDetailsService) : Con
     }
 
     [HttpGet("{userId}")]
-    public ActionResult<List<CardDetails>> Get(string userId)
+    public ActionResult<List<CardDetailsResponse>> Get(string userId)
     {
         var cardDetails = cardDetailsService.GetAllCardDetails(userId);
 
-        return cardDetails;
+        return cardDetails.ConvertAll(CardDetailsResponse.FromCardDetails);
     }
-
-    //[HttpPost]
-    //public IActionResult Post([FromBody] CreateProductRequest createProductRequest)
-    //{
-    //    var product = createProductRequest.ToProduct();
-
-    //    productsService.CreateProduct(product);
-
-    //    return CreatedAtAction(
-    //        actionName: nameof(Get),
-    //        routeValues: new { productid = product.Id },
-    //        value: ProductResponse.FromProduct(product));
-    //}
 }
 
-//public record CreateProductRequest(string Name = "")
-//{
-//    public Product ToProduct()
-//        => new() { Name = Name };
-//}
 
-public record CardDetailsResponse(string Number, string Type, string Status, bool IsPinSet)
-{
-    public static CardDetailsResponse FromCardDetails(CardDetails details)
-        => new(details.CardNumber, details.CardType.ToString(), details.CardStatus.ToString(), details.IsPinSet);
-}
 
 

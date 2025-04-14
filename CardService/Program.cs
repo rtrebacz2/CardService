@@ -1,23 +1,30 @@
 using CardService.Infrastructure.HttpClients;
-using CardService.Services;
 using CardService.Services.AllowedActionRules;
 using Serilog;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using CardService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 {
-    builder.Services.AddControllers();
+    builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, false));
+        });
     builder.Services.AddScoped<ICardDetailsClient, CardDetailsClient>();
     builder.Services.AddScoped<ICardAllowedActionsChooser, CardAllowedActionsChooser>();
-    builder.Services.AddScoped<ICardsService, CardsService>();
+    builder.Services.RegisterCardAllowedActions();
+    builder.Services.AddScoped<ICardService, CardService.Services.CardService>();
     builder.Services.AddSwaggerGen();
-    builder.Services.AddHttpClient();
-    builder.Services.AddHttpClient<ICardDetailsClient, CardDetailsClient>(httpClient =>
+    builder.Services.AddHttpClient<ICardDetailsClient, CardDetailsClient>((sp, httpClient) =>
     {
-        httpClient.BaseAddress = new Uri("http://localhost:5149/");
+        var config = sp.GetRequiredService<IConfiguration>();
+        var baseAddress = config["CardDetailsClient:BaseAddress"];
+        httpClient.BaseAddress = new Uri(baseAddress);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
     })
         .AddPolicyHandler(HttpClientsPolicy.GetRetryPolicy());
-    builder.Services.RegisterCardAllowedActions();
 
     Log.Logger = new LoggerConfiguration()
         .WriteTo.File("logs/api.txt", rollingInterval: RollingInterval.Day)

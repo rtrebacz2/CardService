@@ -12,7 +12,7 @@ public static class HttpResponseMessageExtensions
         {
             PropertyNameCaseInsensitive = true
         };
-        options.Converters.Add(new JsonStringEnumConverter());
+        options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, false));
         return JsonSerializer.Deserialize<T>(jsonString, options)!;
     }
 }

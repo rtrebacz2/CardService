@@ -1,9 +1,9 @@
 ﻿namespace CardService.Entities;
 
-public class CardDetails
+public record CardDetails
 {
-    public string Number { get; set; }
-    public CardType Type { get; set; }
-    public CardStatus Status { get; set; }
+    public string CardNumber { get; set; }
+    public CardType CardType { get; set; }
+    public CardStatus CardStatus { get; set; }
     public bool IsPinSet { get; set; }
 }

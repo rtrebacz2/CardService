@@ -8,6 +8,6 @@ public class Action7Rule : ICardActionRule
 
     public bool IsAllowed(CardDetails details)
     {
-        return new[] {CardStatus.ORDERED, CardStatus.INACTIVE, CardStatus.ACTIVE, CardStatus.BLOCKED}.Contains(details.Status) && details.IsPinSet;
+        return new[] {CardStatus.ORDERED, CardStatus.INACTIVE, CardStatus.ACTIVE, CardStatus.BLOCKED}.Contains(details.CardStatus) && details.IsPinSet;
     }
 }

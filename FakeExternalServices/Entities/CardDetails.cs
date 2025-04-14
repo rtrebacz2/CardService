@@ -1,6 +1,6 @@
 ﻿namespace FakeExternalServices.Entities;
 
-public class CardDetails
+public record CardDetails
 {
     public string CardNumber { get; set; }
     public CardType CardType { get; set; }

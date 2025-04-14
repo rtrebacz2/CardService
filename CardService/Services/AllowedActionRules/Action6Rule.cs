@@ -11,6 +11,6 @@ public class Action6Rule : ICardActionRule
         if(details.IsPinSet == false)
             return false;
 
-        return new[] {CardStatus.ORDERED, CardStatus.INACTIVE, CardStatus.ACTIVE, CardStatus.BLOCKED }.Contains(details.Status);
+        return new[] {CardStatus.ORDERED, CardStatus.INACTIVE, CardStatus.ACTIVE, CardStatus.BLOCKED }.Contains(details.CardStatus);
     }
 }
