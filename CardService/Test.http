@@ -1,5 +1,10 @@
-@HostAddress = http://localhost:5149
+@HostAddress = http://localhost:5142
+@FakeAddress = http://localhost:5149
 
 ### Get action for User1 & Card18
-GET {{HostAddress}}/CardDetails/User1/Card18
+GET {{HostAddress}}/cards/actions?UserId=User1&CardNumber=Card18
+Accept: application/json
+
+### Get data from Fake for User1 & Card18
+GET {{FakeAddress}}/CardDetails/User1/Card18
 Accept: application/json

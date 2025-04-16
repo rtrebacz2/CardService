@@ -1,8 +1,6 @@
-﻿using CardService.Entities;
-using CardService.Infrastructure.HttpClients;
+﻿using CardService.Infrastructure.HttpClients;
 using CardService.Services.AllowedActionRules;
 using CardService.UserCardsModule.Queries;
-using MediatR;
 
 namespace CardService.UserCardsModule.Handlers;
 

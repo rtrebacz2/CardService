@@ -1,5 +1,4 @@
 ﻿using FakeExternalServices.Controllers.Responses;
-using FakeExternalServices.Entities;
 using FakeExternalServices.Services;
 using Microsoft.AspNetCore.Mvc;
 

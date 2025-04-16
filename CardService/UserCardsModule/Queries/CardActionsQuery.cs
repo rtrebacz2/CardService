@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using MediatR;
-
-namespace CardService.UserCardsModule.Queries;
+﻿namespace CardService.UserCardsModule.Queries;
 
 public record CardActionsQuery : IRequest<IEnumerable<string>>
 {

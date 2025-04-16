@@ -3,7 +3,6 @@ using CardService.Services.AllowedActionRules;
 using Serilog;
 using System.Text.Json.Serialization;
 using System.Text.Json;
-using System.Reflection;
 using FluentValidation;
 using CardService.Interceptors;
 using CardService.UserCardsModule.Validators;
@@ -15,6 +14,8 @@ using Prometheus;
 using CardService.Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Trace;
+using CardService.UserCardsModule.Handlers;
+using CardService.UserCardsModule;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<CardDetailsClientOptions>(builder.Configuration.GetSection("CardDetailsClient"));
@@ -24,16 +25,11 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, false));
     })
    ;
-builder.Services.AddMediatR(opt =>
-{
-    opt.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly());
-});
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddFluentValidationClientsideAdapters();
-builder.Services.AddScoped<ICardDetailsClient, CardDetailsClient>();
 builder.Services.AddScoped<ICardAllowedActionsChooser, CardAllowedActionsChooser>();
 builder.Services.AddScoped<ExceptionHandlingMiddleware>();
 builder.Services.AddScoped<IValidator<CardActionsQuery>, CardActionsQueryValidator>();
+builder.Services.AddScoped<IRequestHandler<CardActionsQuery, IEnumerable<string>>, CardActionsQueryHandler>();
 builder.Services.RegisterCardAllowedActions();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient<ICardDetailsClient, CardDetailsClient>((sp, httpClient) =>
@@ -74,7 +70,6 @@ builder.Services.AddSingleton(cardRequestsCounter);
 
 var app = builder.Build();
 app.UseMiddleware<LoggingMiddleware>();
-app.UseMiddleware<FluentValidationExceptionMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseRouting();
 
